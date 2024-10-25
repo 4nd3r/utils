@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+"""
+Maintain list of files you expect to find in directory and consider
+everything else undesirable. The search is recursive and exlusions
+file (relative paths in .notweed) is searched upwards from current
+directory.
+"""
+
+from os import walk
+from os.path import basename, dirname, isfile, join, realpath, relpath
+from sys import exit
+
+exclude = []
+parent = realpath(".")
+while True:
+    f = join(parent, ".notweed")
+    if isfile(f):
+        exclude.append(f)
+        for l in open(f, encoding="utf-8"):
+            exclude.append(join(parent, l.strip()))
+        break
+    if parent == "/":
+        break
+    parent = dirname(parent)
+if not exclude:
+    exit()
+for root, dirs, files in walk(realpath(parent)):
+    absdirs = []
+    for d in dirs:
+        absdirs.append(join(root, d))
+    absfiles = []
+    for f in files:
+        absfiles.append(join(root, f))
+    for e in exclude:
+        if e in absdirs:
+            dirs.remove(basename(e))
+        if e in absfiles:
+            files.remove(basename(e))
+    for f in files:
+        p = relpath(join(root, f))
+        if not p.startswith(".."):
+            print(p)
