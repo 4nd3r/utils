@@ -27,17 +27,19 @@ while True:
 if not repos:
     exit()
 for exists, repo, config, remote in repos:
-    print("\033[1;32m✓\033[0m" if exists else "\033[1;31m✗\033[0m", repo, file=stderr)
-    if len(argv) == 1:
-        continue
     cmd = None
-    if argv[1] == "clone":
-        if exists:
-            continue
-        cmd = ["git", "clone", remote, repo]
-    else:
-        if not exists:
-            continue
-        cmd = ["git", "-C", repo] + argv[1:]
+    if len(argv) > 1:
+        if argv[1] == "clone":
+            if exists:
+                continue
+            cmd = ["git", "clone", remote, repo]
+        else:
+            if not exists:
+                continue
+            cmd = ["git", "-C", repo] + argv[1:]
     if cmd:
+        print("\033[7m{}\033[0m".format(repo))
         run(cmd)
+    else:
+        icon = "\033[1;32m✓\033[0m" if exists else "\033[1;31m✗\033[0m"
+        print(icon, repo)
