@@ -1,0 +1,32 @@
+#!/bin/sh -e
+
+export \
+    GIT_DIR="$HOME/.local/share/hgit/local.git" \
+    GIT_WORK_TREE="$HOME"
+
+case "$1" in
+    '')
+        cd "$HOME"
+
+        a="$GIT_DIR/info/add"
+        [ -f "$a" ] && while read -r l
+            do git add -f "$l"
+            done < "$a"
+
+        d="$( git diff HEAD )"
+        [ -z "$d" ] && exit
+
+        printf '%s\n\nCommit? [y/N] ' "$d"
+        read -r r
+        [ "$r" != 'y' ] && exit
+
+        git commit -a -m "$( git status -bs | grep -Ev '^#' )"
+        git push
+    ;;
+    ls)
+        git ls-tree -r HEAD --name-only
+    ;;
+    *)
+        git "$@"
+    ;;
+esac
