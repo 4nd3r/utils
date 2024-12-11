@@ -26,6 +26,10 @@ case "$1" in
     ls)
         git ls-tree -r HEAD --name-only
     ;;
+    tig)
+        shift
+        tig "$@"
+    ;;
     *)
         git "$@"
     ;;
