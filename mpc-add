@@ -1,0 +1,13 @@
+#!/bin/sh -e
+if [ -n "$1" ]
+then echo "$1"
+else cat
+fi | while read -r l
+do find "$( realpath "$l" )" \
+        -type f \
+        -regextype egrep \
+        -iregex '.+\.(mp3|flac|m4a)' \
+        -print0 \
+    | sort -z \
+    | xargs -r0 mpc add -v
+done
