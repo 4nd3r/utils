@@ -1,36 +1,37 @@
 #!/bin/sh -e
 
-export \
-    GIT_DIR="$HOME/.local/share/hgit/local.git" \
-    GIT_WORK_TREE="$HOME"
+export GIT_DIR="${HOME}/.local/share/hgit/local.git"
+export GIT_WORK_TREE="${HOME}"
 
-case "$1" in
-    '')
-        cd "$HOME"
+case "${1}"
+in
+    ('')
+        cd "${HOME}"
 
-        a="$GIT_DIR/info/add"
-        [ -f "$a" ] && while read -r l
-            do git add -f "$l"
-            done < "$a"
+        a="${GIT_DIR}/info/add"
+        test -f "${a}" \
+        && while read -r l
+        do git add -f "${l}"
+        done <"${a}"
 
-        d="$( git diff HEAD )"
-        [ -z "$d" ] && exit
+        d=$(git diff HEAD)
+        test -n "${d}"
 
-        printf '%s\n\nCommit? [y/N] ' "$d"
+        printf '%s\n\nCommit? [y/N] ' "${d}"
         read -r r
-        [ "$r" != 'y' ] && exit
+        test "${r}" = 'y'
 
-        git commit -a -m "$( git status -bs | grep -Ev '^#' )"
+        git commit -a -m "$(git status -bs | grep -Ev '^#')"
         git push
-    ;;
-    ls)
+        ;;
+    (ls)
         git ls-tree -r HEAD --name-only
-    ;;
-    tig)
+        ;;
+    (tig)
         shift
-        tig "$@"
-    ;;
-    *)
-        git "$@"
-    ;;
+        tig "${@}"
+        ;;
+    (*)
+        git "${@}"
+        ;;
 esac
