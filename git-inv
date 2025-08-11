@@ -58,15 +58,14 @@ for repo in repos:
         run(cmd)
     else:
         icon = icon_x
+        branch = None
         if repo["isdir"]:
             icon = icon_q
             if repo["isgit"]:
-                icon = icon_e
-                origin = run(
-                    ["git", "-C", repo["path"], "config", "--get", "remote.origin.url"],
-                    capture_output=True,
-                    text=True
-                ).stdout.strip()
-                if origin == repo["origin"]:
-                    icon = icon_c
-        print(icon, repo["path"])
+                origin = run(["git", "-C", repo["path"], "config", "--get", "remote.origin.url"], capture_output=True, text=True).stdout.strip()
+                branch = run(["git", "-C", repo["path"], "branch", "--show-current"], capture_output=True, text=True).stdout.strip()
+        print(
+            icon_c if origin == repo["origin"] else icon_e,
+            repo["path"],
+            "\033[1;37m{}\033[0m".format(branch) if branch not in(None, "main", "master") else ""
+        )
