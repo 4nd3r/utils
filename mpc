@@ -1,0 +1,52 @@
+#!/bin/sh -e
+
+_mpc() {
+    /usr/bin/mpc "${@}"
+}
+
+_add() {
+    find "$(realpath "${1}")" \
+        -type f \
+        -regextype egrep \
+        -iregex '.+\.(mp3|flac|wav)$' \
+    | while read -r l
+    do _mpc add "${l}" || true
+    done
+}
+
+case "${1}"
+in
+    (add)
+        if test -z "${2}"
+        then
+            while read -r l
+            do _add "${l}"
+            done
+        elif test -e "${2}"
+        then _add "${2}"
+        else _mpc "${@}"
+        fi
+        ;;
+    (mix)
+        _mpc -q clear
+        case "${2}"
+        in
+            (albums)
+                _mpc list album \
+                | shuf -n10 \
+                | while read -r l
+                do _mpc findadd album "${l}"
+                done
+                ;;
+            (tracks)
+                _mpc listall \
+                | shuf -n100 \
+                | _mpc add
+                ;;
+        esac
+        _mpc -q play
+        ;;
+    (*)
+        _mpc "${@}"
+        ;;
+esac
