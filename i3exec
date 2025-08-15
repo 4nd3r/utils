@@ -1,0 +1,5 @@
+#!/bin/sh -e
+# exec only if workspace is empty
+_w(){ i3-msg -t get_workspaces | jq -r '..|objects|select(.focused==true).name'; }
+_l(){ i3-msg -t get_tree | jq -r "..|objects|select(.name==\"${1}\")|..|objects|select(has(\"window_properties\")).window_properties"; }
+test -z "$(_l "$(_w)")" && "${@}"

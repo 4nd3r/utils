@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+case "${1}"
+in
+    (brown|pink|white)
+        set -- "${1}noise"
+        ;;
+    (sine)
+        set -- 'sine' "${2}"
+        ;;
+    (*)
+        echo 'synth <brown|pink|white|sine #>' >&2
+        exit 1
+        ;;
+esac
+
+sox -n -r 96000 -b 24 -c 2 -t wav - synth 60 "${@}" repeat - | mpv -
