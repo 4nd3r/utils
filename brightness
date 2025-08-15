@@ -1,0 +1,42 @@
+#!/bin/sh -e
+
+_ddcutil()
+{
+    case "${1}"
+    in
+        (+|-)
+            ddcutil setvcp 10 "${1}" 10
+            ;;
+        ([0-9]*)
+            ddcutil setvcp 10 "${1}"
+            ;;
+        (*)
+            ddcutil getvcp -t 10 | cut -d' ' -f4
+            ;;
+    esac
+}
+
+_light()
+{
+    case "${1}"
+    in
+        (+)
+            light -A 10
+            ;;
+        (-)
+            light -U 10
+            ;;
+        ([0-9]*)
+            light -S "${1}"
+            ;;
+        (*)
+            light | sed 's/\.[0-9]*$//'
+            ;;
+    esac
+}
+
+if command -v ddcutil >/dev/null 2>&1
+then _ddcutil "${1}"
+elif command -v light >/dev/null 2>&1
+then _light "${1}"
+fi
