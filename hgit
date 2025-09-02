@@ -8,6 +8,10 @@ in
     ('')
         cd "${HOME}"
 
+        e="${GIT_DIR}/info/exclude"
+        test ! -f "${e}" \
+        && echo '*' >"${e}"
+
         a="${GIT_DIR}/info/add"
         test -f "${a}" \
         && while read -r l
