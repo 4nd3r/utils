@@ -9,6 +9,7 @@ _add() {
         -type f \
         -regextype egrep \
         -iregex '.+\.(mp3|flac|wav)$' \
+    | sort \
     | while read -r l
     do _mpc add "${l}" || true
     done
