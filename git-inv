@@ -57,15 +57,17 @@ for repo in repos:
         print("\033[7m{}\033[0m".format(repo["path"]))
         run(cmd)
     else:
-        icon = icon_x
+        origin = None
         branch = None
+        icon = icon_x
         if repo["isdir"]:
             icon = icon_q
             if repo["isgit"]:
                 origin = run(["git", "-C", repo["path"], "config", "--get", "remote.origin.url"], capture_output=True, text=True).stdout.strip()
                 branch = run(["git", "-C", repo["path"], "branch", "--show-current"], capture_output=True, text=True).stdout.strip()
+                icon = icon_c if origin == repo["origin"] else icon_e
         print(
-            icon_c if origin == repo["origin"] else icon_e,
+            icon,
             repo["path"],
             "\033[1;37m{}\033[0m".format(branch) if branch not in(None, "main", "master") else ""
         )
